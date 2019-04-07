@@ -509,11 +509,9 @@ size_t CustomSoftwareSerial::write(uint8_t b)
   }
 
   writeParityBits(numberOfBits1);
-  tunedDelay(_tx_delay);
   writeStopBits();
 
   SREG = oldSREG; // turn interrupts back on
-  tunedDelay(_tx_delay);
 
   return 1;
 }
@@ -596,17 +594,16 @@ void CustomSoftwareSerial::writeParityBits(uint8_t numberOfBit1) {
           tx_pin_write(HIGH); // send 1
           return;
         }
-
     }
+
+    tunedDelay(_tx_delay);
 }
 
 void CustomSoftwareSerial::writeStopBits() {
-    for(int8_t stopBitIndex = 0; stopBitIndex < 2; stopBitIndex++) {
-        if(_inverse_logic) {
-            tx_pin_write(LOW);
-        } else {
-            tx_pin_write(HIGH);
-        }
+    tx_pin_write(_inverse_logic ? LOW : HIGH);
+
+    for (int8_t stopBitIndex = 0; stopBitIndex < _numberOfStopBit; stopBitIndex++) {
+        tunedDelay(_tx_delay);
     }
 }
 
