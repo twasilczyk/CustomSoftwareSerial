@@ -83,6 +83,8 @@ enum Parity {
 class CustomSoftwareSerial : public Stream
 {
 private:
+  typedef void (*ReadCallback)(uint8_t byte);
+
   // per object data
   uint8_t _receivePin;
   uint8_t _receiveBitMask;
@@ -102,6 +104,8 @@ private:
   uint8_t _maxValueOfDataBit;
   Parity _parityBit;
   uint8_t _numberOfStopBit;
+
+  ReadCallback _readCallback = nullptr;
 
 
   // static data
@@ -133,6 +137,8 @@ public:
   bool isListening() { return this == active_object; }
   bool overflow() { bool ret = _buffer_overflow; _buffer_overflow = false; return ret; }
   int peek();
+
+  void setReadCallback(const ReadCallback cb);
 
   uint8_t getNumberOfDataBit();
   Parity getParity();
